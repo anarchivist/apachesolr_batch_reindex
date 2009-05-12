@@ -157,7 +157,7 @@ function batch_apachesolr_reindex_process(&$context) {
     $context['sandbox']['max'] = db_result(db_query('SELECT COUNT(DISTINCT nid) FROM {apachesolr_search_node}'));
   }
   if (!isset($context['results'])) {
-    $context['results'] = array('attempted' => 0, 'success' => 0)
+    $context['results'] = array('attempted' => 0, 'success' => 0);
   }
   // For this example, we decide that we can safely process
   // 5 nodes at a time without a timeout.
