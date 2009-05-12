@@ -156,17 +156,46 @@ function batch_apachesolr_reindex_process(&$context) {
      db_query("UPDATE {apachesolr_search_node} SET changed = %d WHERE changed > %d", $time, $time);
     $context['sandbox']['max'] = db_result(db_query('SELECT COUNT(DISTINCT nid) FROM {apachesolr_search_node}'));
   }
-  $documents = array();
-  $old_position = apachesolr_get_last_index($namespace);
-  $position = $old_position;
+
   // For this example, we decide that we can safely process
   // 5 nodes at a time without a timeout.
   $limit = 50;
 
   // With each pass through the callback, retrieve the next group of nids.
   $result = apachesolr_get_nodes_to_index('apachesolr_search', $limit);
-  apachesolr_index_nodes($result, 'apachesolr_search');
-  $context['sandbox']['progress'] += count($result);
+  //apachesolr_index_nodes($result, 'apachesolr_search');
+  
+  
+  include_once(drupal_get_path('module', 'apachesolr') .'/apachesolr.index.inc') ;
+  $documents = array();
+  $old_position = apachesolr_get_last_index($namespace);
+  $position = $old_position;
+  while ($row = db_fetch_object($result)) {
+     // Variables to track the last item changed.
+     $position['last_change'] = $row->changed;
+     $position['last_nid'] = $row->nid;
+     $callback($documents, $row->nid, $namespace);
+     
+     $node = node_load($row->nid, NULL, TRUE);
+     $context['results'][] = $node->title;
+
+     // Update our progress information.
+     $context['sandbox']['progress']++;
+     $context['sandbox']['current_node'] = $node->nid;
+     $context['message'] = t('Now processing %node', array('%node' => $node->title));
+   }
+   if (count($documents)) {
+     $solr->addDocuments($documents);
+     apachesolr_index_updated(time());
+   }
+   if ($namespace && $position != $old_position) {
+     $stored = variable_get('apachesolr_index_last', array());
+     $stored[$namespace] = $position;
+     variable_set('apachesolr_index_last', $stored);
+   }
+  
+  
+  //$context['sandbox']['progress'] += count($result);
 
   // Inform the batch engine that we are not finished,
   // and provide an estimation of the completion level we reached.
