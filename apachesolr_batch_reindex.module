@@ -166,21 +166,8 @@ function batch_apachesolr_reindex_process(&$context) {
   // With each pass through the callback, retrieve the next group of nids.
   $result = apachesolr_get_nodes_to_index('apachesolr_search', $limit);
   apachesolr_index_nodes($result, 'apachesolr_search');
-  while ($row = db_fetch_object($result)) {
+  $context['sandbox']['progress'] += count($result);
 
-    // Here we actually perform our processing on the current node.
-    $node = node_load($row->nid, NULL, TRUE);
-    
-    $position['last_change'] = $row->changed;
-    $position['last_nid'] = $row->nid;
-    // Store some result for post-processing in the finished callback.
-    $context['results'][] = $node->title;
-
-    // Update our progress information.
-    $context['sandbox']['progress']++;
-    $context['sandbox']['current_node'] = $node->nid;
-    $context['message'] = t('Now processing %node', array('%node' => $node->title));
-  }
   // Inform the batch engine that we are not finished,
   // and provide an estimation of the completion level we reached.
   if ($context['sandbox']['progress'] != $context['sandbox']['max']) {
