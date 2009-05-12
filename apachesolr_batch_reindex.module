@@ -170,12 +170,12 @@ function batch_apachesolr_reindex_process(&$context) {
   $documents = array();
   $old_position = apachesolr_get_last_index($namespace);
   $position = $old_position;
-  watchdog('Apache Solr', 'About to start iterating', NULL, WATCHDOG_DEBUG);
   while ($row = db_fetch_object($result)) {
      // Variables to track the last item changed.
      $position['last_change'] = $row->changed;
      $position['last_nid'] = $row->nid;
      apachesolr_add_node_document($documents, $row->nid, 'apachesolr_search');
+     watchdog('Apache Solr', 'Add node document ok', NULL, WATCHDOG_DEBUG);
      
      $node = node_load($row->nid, NULL, TRUE);
      $context['results'][] = $node->title;
@@ -184,6 +184,7 @@ function batch_apachesolr_reindex_process(&$context) {
      $context['sandbox']['progress']++;
      $context['sandbox']['current_node'] = $node->nid;
      $context['message'] = t('Now processing %node', array('%node' => $node->title));
+     watchdog('Apache Solr', 'This loop complete', NULL, WATCHDOG_DEBUG); 
    }
    if (count($documents)) {
      $solr->addDocuments($documents);
