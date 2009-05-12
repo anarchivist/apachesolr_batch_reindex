@@ -185,12 +185,6 @@ function batch_apachesolr_reindex_process(&$context) {
      $solr->addDocuments(array($doc));
      watchdog('Apache Solr', 'Added nid '.$row->nid, NULL, WATCHDOG_DEBUG);
    }
-   if ($namespace && $position != $old_position) {
-     $stored = variable_get('apachesolr_index_last', array());
-     $stored[$namespace] = $position;
-     variable_set('apachesolr_index_last', $stored);
-   }
-  
   
   //$context['sandbox']['progress'] += count($result);
 
