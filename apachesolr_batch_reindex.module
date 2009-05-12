@@ -127,7 +127,7 @@ function batch_apachesolr_reindex() {
 *   1 (or no value explicitly set) means the operation is finished
 *   and the batch processing can continue to the next operation.
 */
-function batch_apachesolr_reindex_process($options1, $options2, &$context) {
+function batch_apachesolr_reindex_process(&$context) {
   if (!isset($context['sandbox']['progress'])) {
     try {
       // Get the $solr object
