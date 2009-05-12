@@ -181,6 +181,7 @@ function batch_apachesolr_reindex_process(&$context) {
      $context['sandbox']['current_node'] = $node->nid;
      $context['message'] = t('Now processing %node', array('%node' => $node->title));
      $doc = apachesolr_node_to_document($row->nid, 'apachesolr_search');
+     watchdog('Apache Solr', 'Converted nid '.$row->nid, NULL, WATCHDOG_DEBUG);
      $solr->addDocuments(array($doc));
      watchdog('Apache Solr', 'Added nid '.$row->nid, NULL, WATCHDOG_DEBUG);
    }
