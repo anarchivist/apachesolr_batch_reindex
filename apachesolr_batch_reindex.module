@@ -182,6 +182,7 @@ function batch_apachesolr_reindex_process(&$context) {
      $context['message'] = t('Now processing %node', array('%node' => $node->title));
      $doc = apachesolr_node_to_document($row->nid, 'apachesolr_search');
      $solr->addDocuments(array($doc));
+     watchdog('Apache Solr', 'Added nid '.$row->nid, NULL, WATCHDOG_DEBUG);
    }
    if ($namespace && $position != $old_position) {
      $stored = variable_get('apachesolr_index_last', array());
