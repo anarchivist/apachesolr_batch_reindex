@@ -128,7 +128,7 @@ function batch_apachesolr_reindex() {
 *   and the batch processing can continue to the next operation.
 */
 function batch_apachesolr_reindex_process(&$context) {
-  if (!isset($context['sandbox']['progress'])) {
+  if (empty($context['sandbox'])) {
     try {
       // Get the $solr object
       $solr = apachesolr_get_solr();
