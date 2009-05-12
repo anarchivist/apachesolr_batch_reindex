@@ -170,6 +170,8 @@ function batch_apachesolr_reindex_process(&$context) {
 
     // Here we actually perform our processing on the current node.
     $node = node_load($row->nid, NULL, TRUE);
+    watchdog('Apache Solr', 'Loaded node' . $row->nid, NULL, WATCHDOG_DEBUG);
+    
     $position['last_change'] = $row->changed;
     $position['last_nid'] = $row->nid;
     apachesolr_add_node_document($documents, $row->nid);
