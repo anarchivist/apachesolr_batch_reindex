@@ -159,17 +159,17 @@ function batch_apachesolr_reindex_process(&$context) {
   $documents = array();
   $old_position = apachesolr_get_last_index($namespace);
   $position = $old_position;
-  watchdog('Apache Solr', 'Got last index position', NULL, WATCHDOG_DEBUG);
   // For this example, we decide that we can safely process
   // 5 nodes at a time without a timeout.
   $limit = 50;
 
   // With each pass through the callback, retrieve the next group of nids.
   $result = apachesolr_get_nodes_to_index('apachesolr_search', $limit);
+  
   while ($row = db_fetch_object($result)) {
 
     // Here we actually perform our processing on the current node.
-    $node = node_load($row['nid'], NULL, TRUE);
+    $node = node_load($row->nid, NULL, TRUE);
     $position['last_change'] = $row->changed;
     $position['last_nid'] = $row->nid;
     apachesolr_add_node_document($documents, $row->nid);
