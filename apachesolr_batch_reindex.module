@@ -156,7 +156,9 @@ function batch_apachesolr_reindex_process(&$context) {
      db_query("UPDATE {apachesolr_search_node} SET changed = %d WHERE changed > %d", $time, $time);
     $context['sandbox']['max'] = db_result(db_query('SELECT COUNT(DISTINCT nid) FROM {apachesolr_search_node}'));
   }
-
+  $documents = array();
+  $old_position = apachesolr_get_last_index($namespace);
+  $position = $old_position;
   // For this example, we decide that we can safely process
   // 5 nodes at a time without a timeout.
   $limit = 50;
