@@ -156,25 +156,21 @@ function batch_apachesolr_reindex_process(&$context) {
      db_query("UPDATE {apachesolr_search_node} SET changed = %d WHERE changed > %d", $time, $time);
     $context['sandbox']['max'] = db_result(db_query('SELECT COUNT(DISTINCT nid) FROM {apachesolr_search_node}'));
   }
-  if (!isset($context['results'])) {
-    $context['results'] = array('attempted' => 0, 'success' => 0);
-  }
+
   // For this example, we decide that we can safely process
   // 5 nodes at a time without a timeout.
   $limit = 50;
 
   // With each pass through the callback, retrieve the next group of nids.
   $result = apachesolr_get_nodes_to_index('apachesolr_search', $limit);
-  $context['results']['attempted'] += count($result);
   apachesolr_index_nodes($result, 'apachesolr_search');
-  $context['results']['success'] += count($result);
-  // $context['sandbox']['progress'] += count($result);
-  // 
-  // // Inform the batch engine that we are not finished,
-  // // and provide an estimation of the completion level we reached.
-  // if ($context['sandbox']['progress'] != $context['sandbox']['max']) {
-  //   $context['finished'] = $context['sandbox']['progress'] / $context['sandbox']['max'];
-  // }
+  $context['sandbox']['progress'] += count($result);
+
+  // Inform the batch engine that we are not finished,
+  // and provide an estimation of the completion level we reached.
+  if ($context['sandbox']['progress'] != $context['sandbox']['max']) {
+    $context['finished'] = $context['sandbox']['progress'] / $context['sandbox']['max'];
+  }
 }
 
 /**
