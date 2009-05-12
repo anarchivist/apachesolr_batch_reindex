@@ -175,7 +175,7 @@ function batch_apachesolr_reindex_process(&$context) {
      // Variables to track the last item changed.
      $position['last_change'] = $row->changed;
      $position['last_nid'] = $row->nid;
-     $callback($documents, $row->nid, $namespace);
+     apachesolr_add_node_document($documents, $row->nid, 'apachesolr_search');
      
      $node = node_load($row->nid, NULL, TRUE);
      $context['results'][] = $node->title;
