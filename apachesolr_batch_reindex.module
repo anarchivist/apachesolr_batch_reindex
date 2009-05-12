@@ -161,7 +161,7 @@ function batch_apachesolr_reindex_process(&$context) {
   $position = $old_position;
   // For this example, we decide that we can safely process
   // 5 nodes at a time without a timeout.
-  $limit = 50;
+  $limit = variable_get('apachesolr_cron_limit', 50);
 
   // With each pass through the callback, retrieve the next group of nids.
   $result = apachesolr_get_nodes_to_index('apachesolr_search', $limit);
