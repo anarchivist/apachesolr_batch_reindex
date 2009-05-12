@@ -155,6 +155,7 @@ function batch_apachesolr_reindex_process(&$context) {
      $time = time();
      db_query("UPDATE {apachesolr_search_node} SET changed = %d WHERE changed > %d", $time, $time);
     $context['sandbox']['max'] = db_result(db_query('SELECT COUNT(DISTINCT nid) FROM {apachesolr_search_node}'));
+     watchdog('Apache Solr', 'Wiped index metadata table', NULL, WATCHDOG_DEBUG);
   }
   $documents = array();
   $old_position = apachesolr_get_last_index($namespace);
