@@ -57,10 +57,10 @@ function apachesolr_batch_reindex_menu() {
 *   fails.
 *
 */
-function batch_apachesolr_reindex($options1 = NULL, $options2 = NULL) {
+function batch_apachesolr_reindex() {
   $batch = array(
     'operations' => array(
-      array('batch_apachesolr_reindex_process', array($options1, $options2)),
+      array('batch_apachesolr_reindex_process', array()),
       ),
     'finished' => 'batch_apachesolr_reindex_finished',
     'title' => t('Reindexing nodes'),
