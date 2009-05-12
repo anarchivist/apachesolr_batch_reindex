@@ -57,10 +57,10 @@ function apachesolr_batch_reindex_menu() {
 *   fails.
 *
 */
-function batch_apachesolr_reindex() {
+function batch_apachesolr_reindex($options1 = NULL, $options2 = NULL) {
   $batch = array(
     'operations' => array(
-      array('batch_apachesolr_reindex_process'),
+      array('batch_apachesolr_reindex_process', array($options1, $options2)),
       ),
     'finished' => 'batch_apachesolr_reindex_finished',
     'title' => t('Reindexing nodes'),
@@ -127,7 +127,7 @@ function batch_apachesolr_reindex() {
 *   1 (or no value explicitly set) means the operation is finished
 *   and the batch processing can continue to the next operation.
 */
-function batch_apachesolr_reindex_process(&$context) {
+function batch_apachesolr_reindex_process($options1, $options2, &$context) {
   if (!isset($context['sandbox']['progress'])) {
     try {
       // Get the $solr object
