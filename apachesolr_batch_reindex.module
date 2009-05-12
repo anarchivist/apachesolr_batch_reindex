@@ -10,7 +10,7 @@
  * that the file can be displayed nicely in default-sized consoles.
  */
 
-function apachesolr_search_menu() {
+function apachesolr_batch_reindex_menu() {
   $items['admin/settings/apachesolr/reindex'] = array(
     'title'            => 'Batch Reindex',
     'page callback'    => 'apachesolr_batch_reindex_settings_page',
