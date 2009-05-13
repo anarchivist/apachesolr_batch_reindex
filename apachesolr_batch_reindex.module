@@ -189,7 +189,7 @@ function batch_apachesolr_reindex_process(&$context) {
 function batch_apachesolr_reindex_finished($success, $results, $operations) {
   if ($success) {
     // Here we do something meaningful with the results.
-    $message = format_plural(ceil($results), '1 item successfully processed:', '@count items successfully processed:');
+    $message = format_plural(count($results), '1 item successfully processed:', '@count items successfully processed:');
     $message .= theme('item_list', $results);
   }
   else {
