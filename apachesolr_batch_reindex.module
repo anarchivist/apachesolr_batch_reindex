@@ -160,7 +160,7 @@ function batch_apachesolr_reindex_process(&$context) {
   // $old_position = apachesolr_get_last_index($namespace);
   // $position = $old_position;
   // For this example, we decide that we can safely process
-  // 50 nodes at a time without a timeout.
+  // max set in settings for cron limit or 50 nodes at a time without a timeout.
   $limit = variable_get('apachesolr_cron_limit', 50);
 
   // With each pass through the callback, retrieve the next group of nids.
@@ -171,7 +171,7 @@ function batch_apachesolr_reindex_process(&$context) {
   $total = $status['total'];
   $nodes_indexed = db_result(db_query('SELECT COUNT(nid) FROM {apachesolr_search_node}'));
   $context['sandbox']['progress'] += min($limit, $remaining);
-  $context['message'] = t('Reindexing @limit of @total.', array('@limit' => $limit, '@total' => $total - $context['sandbox']['progress']));
+  $context['message'] = t('Reindexing @limit of @total.', array('@limit' => $limit, '@total' => $remaining));
   $context['sandbox']['max'] = $total;
 
   // Inform the batch engine that we are not finished,
