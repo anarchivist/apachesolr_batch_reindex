@@ -167,9 +167,10 @@ function batch_apachesolr_reindex_process(&$context) {
   $result = apachesolr_get_nodes_to_index('apachesolr_search', $limit);
   apachesolr_index_nodes($result, 'apachesolr_search');
   $status = module_invoke('apachesolr_search', 'search', 'status');
+  $remaining = $status['remaining'];
   $total = $status['total'];
   $nodes_indexed = db_result(db_query('SELECT COUNT(nid) FROM {apachesolr_search_node}'));
-  $context['sandbox']['progress'] += $limit;
+  $context['sandbox']['progress'] += min($limit, $remaining);
   $context['message'] = t('Reindexing @limit of @total.', array('@limit' => $limit, '@total' => $total - $context['sandbox']['progress']));
   $context['sandbox']['max'] = $total;
 
