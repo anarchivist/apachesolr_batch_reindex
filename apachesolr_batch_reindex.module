@@ -161,13 +161,15 @@ function batch_apachesolr_reindex_process(&$context) {
 
   // Pull the total and remaining variables using apachesolr_search status function.
   // This is used to push the progress bar for each group of nodes being indexed.
+  // Must set progress before calling the apachesolr_index_nodes() function to properly increment
+  // the progress else progress and total will never equal.
   $status = module_invoke('apachesolr_search', 'search', 'status');
   $remaining = $status['remaining'];
   $total = $status['total'];
   $nodes_indexed = db_result(db_query('SELECT COUNT(nid) FROM {apachesolr_search_node}'));
   $context['sandbox']['progress'] += min($limit, $remaining);
   $number_indexed = min($limit, $remaining);
-  $context['message'] = t('Reindexing @current of @total. (Progress: @progress; Total: @all)', array('@current' => $number_indexed, '@total' => $remaining, '@progress' => $context['sandbox']['progress'], '@all' => $total));
+  $context['message'] = t('Reindexing @current of @total.', array('@current' => $number_indexed, '@total' => $remaining));
   $context['sandbox']['max'] = $total;
 
   // With each pass through the callback, retrieve the next group of nids.
