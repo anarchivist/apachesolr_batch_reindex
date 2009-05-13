@@ -170,8 +170,9 @@ function batch_apachesolr_reindex_process(&$context) {
   $remaining = $status['remaining'];
   $total = $status['total'];
   $nodes_indexed = db_result(db_query('SELECT COUNT(nid) FROM {apachesolr_search_node}'));
-  $context['sandbox']['progress'] = min($limit, $remaining);
-  $context['message'] = t('Reindexing @limit of @total.', array('@limit' => $limit, '@total' => $remaining));
+  $context['sandbox']['progress'] += min($limit, $remaining);
+  $number_indexed = min($limit, $remaining);
+  $context['message'] = t('Reindexing @current of @total.', array('@current' => $number_indexed, '@total' => $remaining));
   $context['sandbox']['max'] = $total;
 
   // Inform the batch engine that we are not finished,
