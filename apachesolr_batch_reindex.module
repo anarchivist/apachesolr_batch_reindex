@@ -164,8 +164,6 @@ function batch_apachesolr_reindex_process(&$context) {
   $limit = variable_get('apachesolr_cron_limit', 50);
 
   // With each pass through the callback, retrieve the next group of nids.
-  $result = apachesolr_get_nodes_to_index('apachesolr_search', $limit);
-  apachesolr_index_nodes($result, 'apachesolr_search');
   $status = module_invoke('apachesolr_search', 'search', 'status');
   $remaining = $status['remaining'];
   $total = $status['total'];
@@ -174,6 +172,9 @@ function batch_apachesolr_reindex_process(&$context) {
   $number_indexed = min($limit, $remaining);
   $context['message'] = t('Reindexing @current of @total. (Progress: @progress; Total: @all)', array('@current' => $number_indexed, '@total' => $remaining, '@progress' => $context['sandbox']['progress'], '@all' => $total));
   $context['sandbox']['max'] = $total;
+
+  $result = apachesolr_get_nodes_to_index('apachesolr_search', $limit);
+  apachesolr_index_nodes($result, 'apachesolr_search');
 
   // Inform the batch engine that we are not finished,
   // and provide an estimation of the completion level we reached.
