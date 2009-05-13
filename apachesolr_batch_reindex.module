@@ -169,7 +169,7 @@ function batch_apachesolr_reindex_process(&$context) {
   $nodes_indexed = db_result(db_query('SELECT COUNT(nid) FROM {apachesolr_search_node}'));
   $context['sandbox']['progress'] += min($limit, $remaining);
   $number_indexed = min($limit, $remaining);
-  $context['message'] = t('Reindexing @current of @total.', array('@current' => $number_indexed, '@total' => $remaining));
+  $context['message'] = t('Reindexing @current of @total.', array('@current' => $context['sandbox']['progress'], '@total' => $remaining));
   $context['sandbox']['max'] = $total;
 
   // With each pass through the callback, retrieve the next group of nids.
