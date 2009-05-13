@@ -154,16 +154,13 @@ function batch_apachesolr_reindex_process(&$context) {
      // Make sure no nodes end up with a timestamp that's in the future.
      $time = time();
      db_query("UPDATE {apachesolr_search_node} SET changed = %d WHERE changed > %d", $time, $time);
-    // $context['sandbox']['max'] = db_result(db_query('SELECT COUNT(DISTINCT nid) FROM {apachesolr_search_node}'));
   }
-  // $documents = array();
-  // $old_position = apachesolr_get_last_index($namespace);
-  // $position = $old_position;
   // For this example, we decide that we can safely process
   // max set in settings for cron limit or 50 nodes at a time without a timeout.
   $limit = variable_get('apachesolr_cron_limit', 50);
 
-  // With each pass through the callback, retrieve the next group of nids.
+  // Pull the total and remaining variables using apachesolr_search status function.
+  // This is used to push the progress bar for each group of nodes being indexed.
   $status = module_invoke('apachesolr_search', 'search', 'status');
   $remaining = $status['remaining'];
   $total = $status['total'];
@@ -173,6 +170,7 @@ function batch_apachesolr_reindex_process(&$context) {
   $context['message'] = t('Reindexing @current of @total. (Progress: @progress; Total: @all)', array('@current' => $number_indexed, '@total' => $remaining, '@progress' => $context['sandbox']['progress'], '@all' => $total));
   $context['sandbox']['max'] = $total;
 
+  // With each pass through the callback, retrieve the next group of nids.
   $result = apachesolr_get_nodes_to_index('apachesolr_search', $limit);
   apachesolr_index_nodes($result, 'apachesolr_search');
 
@@ -189,7 +187,7 @@ function batch_apachesolr_reindex_process(&$context) {
 function batch_apachesolr_reindex_finished($success, $results, $operations) {
   if ($success) {
     // Here we do something meaningful with the results.
-    $message = format_plural(count($results), '1 item successfully processed:', '@count items successfully processed:');
+    $message = format_plural(ceil($results), '1 item successfully processed:', '@count items successfully processed:');
     $message .= theme('item_list', $results);
   }
   else {
