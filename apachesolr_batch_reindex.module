@@ -65,7 +65,7 @@ function batch_apachesolr_reindex() {
     'finished' => 'batch_apachesolr_reindex_finished',
     'title' => t('Reindexing nodes'),
     'init_message' => t('Batch reindexing is starting.'),
-    'progress_message' => t('Reindexed @current out of @total.'),
+    //'progress_message' => t('Reindexed @current out of @total.'),
     'error_message' => t('Batch reindexing has encountered an error.'),
   );
   batch_set($batch);
@@ -169,7 +169,7 @@ function batch_apachesolr_reindex_process(&$context) {
   $nodes_indexed = db_result(db_query('SELECT COUNT(nid) FROM {apachesolr_search_node}'));
   $context['sandbox']['progress'] += min($limit, $remaining);
   $number_indexed = min($limit, $remaining);
-  $context['progress_message'] = t('Reindexing @current of @total.', array('@current' => $context['sandbox']['progress'], '@total' => $total));
+  $context['message'] = t('Reindexing @current of @total.', array('@current' => $context['sandbox']['progress'], '@total' => $total));
   $context['sandbox']['max'] = $total;
 
   // With each pass through the callback, retrieve the next group of nids.
