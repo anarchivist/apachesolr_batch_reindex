@@ -3,13 +3,25 @@
 
 /**
  * @file
- * This is the file description for Apachesolr Batch Reindex module.
+ * Enables a batch reindexing function for apachesolr using the Batch API.
  *
- * In this more verbose, multi-line description, you can specify what this
- * file does exactly. Make sure to wrap your documentation in column 78 so
- * that the file can be displayed nicely in default-sized consoles.
+ * This module will be deprecated at some point soon. Code that calls the 
+ * batch API for apachesolr has been added to 6.x-2.x-dev as of 11/2009, and
+ * a backported patch exists. It's possible that this patch will be committed
+ * before apachesolr 6.x-1.0 is released.
+ *
+ * Code is based on sample code on drupal.org (see 3rd see reference)
+ *
+ * @see http://drupal.org/node/456420
+ * @see http://api.drupal.org/api/group/batch
+ * @see http://drupal.org/node/180528
  */
 
+/**
+ * Implementation of hook_menu().
+ *
+ * @see hook_menu()
+ */
 function apachesolr_batch_reindex_menu() {
   $items['admin/settings/apachesolr/reindex'] = array(
     'title'            => 'Batch Reindex',
@@ -24,38 +36,7 @@ function apachesolr_batch_reindex_menu() {
 
 
 /**
-* The $batch can include the following values. Only 'operations'
-* and 'finished' are required, all others will be set to default values.
-*
-* @param operations
-*   An array of callbacks and arguments for the callbacks.
-*   There can be one callback called one time, one callback
-*   called repeatedly with different arguments, different
-*   callbacks with the same arguments, one callback with no
-*   arguments, etc.
-*
-* @param finished
-*   A callback to be used when the batch finishes.
-*
-* @param title
-*   A title to be displayed to the end user when the batch starts.
-*
-* @param init_message
-*   An initial message to be displayed to the end user when the batch starts.
-*
-* @param progress_message
-*   A progress message for the end user. Placeholders are available.
-*   Placeholders note the progression by operation, i.e. if there are
-*   2 operations, the message will look like:
-*    'Processed 1 out of 2.'
-*    'Processed 2 out of 2.'
-*   Placeholders include:
-*     @current, @remaining, @total and @percentage
-*
-* @param error_message
-*   The error message that will be displayed to the end user if the batch
-*   fails.
-*
+* Wrapper function for the Batch API.
 */
 function batch_apachesolr_reindex() {
   $batch = array(
@@ -80,52 +61,22 @@ function batch_apachesolr_reindex() {
 }
 
 /**
-* Batch Operation Callback
+* Batch Operation Callback to process reindexing tasks.
 *
-* Each batch operation callback will iterate over and over until
-* $context['finished'] is set to 1. After each pass, batch.inc will
-* check its timer and see if it is time for a new http request,
-* i.e. when more than 1 minute has elapsed since the last request.
+* Steps involved:
+* - Checks to see if solr instance is available.
+* - Delete apachesolr_index_last variable from the Drupal database
+* - Delete contents of apachesolr_search_node table
+* - Repopulate apachesolr_search_node (cf apachesolr_rebuild_index_table())
+* - Iterate through the following:
+*   - Grab a batch of either apache_cron_limit or 50 nodes
+*   - Do some mathematics do determine progress.
+*   - Index those nodes.
 *
-* An entire batch that processes very quickly might only need a single
-* http request even if it iterates through the callback several times,
-* while slower processes might initiate a new http request on every
-* iteration of the callback.
+* @param &$context
+*   Batch API context object.
 *
-* This means you should set your processing up to do in each iteration
-* only as much as you can do without a php timeout, then let batch.inc
-* decide if it needs to make a fresh http request.
-*
-* @param options1, options2
-*   If any arguments were sent to the operations callback, they
-*   will be the first argments available to the callback.
-*
-* @param context
-*   $context is an array that will contain information about the
-*   status of the batch. The values in $context will retain their
-*   values as the batch progresses.
-*
-* @param $context['sandbox']
-*   Use the $context['sandbox'] rather than $_SESSION to store the
-*   information needed to track information between successive calls.
-*   The values in the sandbox will be stored and updated in the database
-*   between http requests until the batch finishes processing. This will
-*   avoid problems if the user navigates away from the page before the
-*   batch finishes.
-*
-* @param $context['results']
-*   The array of results gathered so far by the batch processing.
-*   The current operation can append its own.
-*
-* @param $context['message']
-*   A text message displayed in the progress page.
-*
-* @param $context['finished']
-*   A float number between 0 and 1 informing the processing engine
-*   of the completion level for the operation.
-*
-*   1 (or no value explicitly set) means the operation is finished
-*   and the batch processing can continue to the next operation.
+* @see apachesolr_rebuild_index_table()
 */
 function batch_apachesolr_reindex_process(&$context) {
   if (empty($context['sandbox'])) {

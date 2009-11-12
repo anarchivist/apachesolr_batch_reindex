@@ -26,4 +26,4 @@ dependencies[] = apachesolr
 ; - http://drupal.org/node/101009 (Drupal 5)
 ; - http://drupal.org/node/231036 (Drupal 6)
 
-version = "6.x-1.x-dev"
+version = "6.x-1.2"
